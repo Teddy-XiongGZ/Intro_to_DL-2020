@@ -26,3 +26,4 @@
 ## Other Materials
 - [Causal Corpus 事件因果关系语料统计](https://blog.csdn.net/gao2628688/article/details/96228855)
 - [Corpus-Based Language Studies](https://www.lancaster.ac.uk/fass/projects/corpus/)
+- [自然语言处理之中英语料库](https://blog.csdn.net/zeng_xiangt/article/details/81572317)
