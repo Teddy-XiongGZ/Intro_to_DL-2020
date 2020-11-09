@@ -11,8 +11,8 @@
 
 ## Annotated Dataset
 ### Chinese Dataset
-哈工大中文篇章关系语料 http://ir.hit.edu.cn/hit-cdtb/        
-Chinese Discourse Treebank 0.5 https://catalog.ldc.upenn.edu/LDC2014T21 (需注册)
+[哈工大中文篇章关系语料](http://ir.hit.edu.cn/hit-cdtb/)
+[Chinese Discourse Treebank 0.5](https://catalog.ldc.upenn.edu/LDC2014T21) (需注册)
 
 ### English Dataset
 BECAUSE https://github.com/duncanka/BECAUSE
