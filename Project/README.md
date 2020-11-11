@@ -22,6 +22,7 @@
 
 ## Related Research
 - [The BECauSE Corpus 2.0: Annotating Causality and Overlapping Relations](https://www.aclweb.org/anthology/W17-0812/)
+- [Automatic Extraction of Causal Relations from Text using Linguistically Informed Deep Neural Networks](https://www.aclweb.org/anthology/W18-5035/)
 
 ## Other Materials
 - [Causal Corpus 事件因果关系语料统计](https://blog.csdn.net/gao2628688/article/details/96228855)
