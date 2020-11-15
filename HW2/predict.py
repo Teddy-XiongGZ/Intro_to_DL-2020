@@ -129,4 +129,4 @@ for i in range(len(result)):
 file.flush()
 file.close()
 
-# srun -G 1 --pty -nodelist=thunlp-3 python predict.py --used_model vit_small_patch16_224 --model test
+# srun -G 1 --pty -nodelist=thunlp-3 python predict.py --used_model vit_small_patch16_224 --model_name vit_small_patch16_224
