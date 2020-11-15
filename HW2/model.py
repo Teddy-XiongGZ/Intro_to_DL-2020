@@ -1,6 +1,7 @@
 # model.py
 import torch
 from torch import nn
+import torch.nn.functional as F
 from efficientnet_pytorch import EfficientNet
 import timm
 class OurModel(nn.Module):
@@ -10,4 +11,5 @@ class OurModel(nn.Module):
     self.efficientnet = timm.create_model(model_name, pretrained=True)
     self.linear = nn.Linear(1000,100)
   def forward(self,input):
-    return self.linear(self.efficientnet(input))
+    return self.linear(self.efficientnet(F.interpolate(input, (224, 224))))
+    # return self.linear(self.efficientnet(input))
