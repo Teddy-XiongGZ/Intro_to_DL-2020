@@ -31,6 +31,7 @@
 - [Identifying Causal Relations Using Parallel Wikipedia Articles](http://www.cs.columbia.edu/nlp/papers/2016/hidey_wikipedia_causality_acl2016.pdf) ACL2016
 
 ## Other Materials
+- [ChineseNLPCorpus](https://github.com/InsaneLife/ChineseNLPCorpus)
 - [Causal Corpus 事件因果关系语料统计](https://blog.csdn.net/gao2628688/article/details/96228855)
 - [Corpus-Based Language Studies](https://www.lancaster.ac.uk/fass/projects/corpus/)
 - [自然语言处理之中英语料库](https://blog.csdn.net/zeng_xiangt/article/details/81572317)
