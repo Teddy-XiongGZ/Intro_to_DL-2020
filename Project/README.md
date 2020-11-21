@@ -27,7 +27,7 @@
 - [Automatic Extraction of Causal Relations from Text using Linguistically Informed Deep Neural Networks](https://www.aclweb.org/anthology/W18-5035/) ACL2018
 - [Causal Relation Extraction](http://lrec-conf.org/proceedings/lrec2008/pdf/87_paper.pdf) LREC2008
 - [CATENA: CAusal and TEmporal relation extraction from NAtural language texts](https://www.aclweb.org/anthology/C16-1007.pdf) ACL2016
-- [Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer](https://arxiv.org/pdf/1910.10683v3.pdf) JMLR2020
+- [Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer](https://arxiv.org/pdf/1910.10683v3.pdf) JMLR2020 [T5](https://huggingface.co/transformers/model_doc/t5.html)
 - [Identifying Causal Relations Using Parallel Wikipedia Articles](http://www.cs.columbia.edu/nlp/papers/2016/hidey_wikipedia_causality_acl2016.pdf) ACL2016
 
 ## Other Materials
