@@ -6,9 +6,6 @@
 - 用自动生成的数据集进行预训练，再结合已有标注数据来做fine tuning(模型基于[BERT](https://arxiv.org/abs/1810.04805))
 - 将训练好的模型在儿童语料库上测试，探究儿童对该逻辑的语言表达的发展情况
 
-## Unlabelled Corpus
-
-
 ## Annotated Dataset
 ### Chinese Dataset
 - [哈工大中文篇章关系语料](http://ir.hit.edu.cn/hit-cdtb/)
