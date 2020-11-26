@@ -27,7 +27,9 @@
 - [Identifying Causal Relations Using Parallel Wikipedia Articles](http://www.cs.columbia.edu/nlp/papers/2016/hidey_wikipedia_causality_acl2016.pdf) ACL2016
 
 - [**Automatic Detection of Causal Relations for Question Answering**](https://www.aclweb.org/anthology/W03-1210.pdf) ACL2003
-- [**Creating causal embeddings for question answering with minimal supervision**](https://www.aclweb.org/anthology/D16-1014/) EMNLP2016
+- [Creating causal embeddings for question answering with minimal supervision](https://www.aclweb.org/anthology/D16-1014/) EMNLP2016
+- [XCOPA: A Multilingual Dataset for Causal Commonsense Reasoning](https://github.com/cambridgeltl/xcopa#) EMNMLP2020
+- [GLUCOSE](https://github.com/ElementalCognition/glucose/) EMNLP2020
 
 ## Other Materials
 - [Causal Corpus 事件因果关系语料统计](https://blog.csdn.net/gao2628688/article/details/96228855)
