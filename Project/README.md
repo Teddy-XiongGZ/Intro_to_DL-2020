@@ -26,8 +26,8 @@
 - [Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer](https://arxiv.org/pdf/1910.10683v3.pdf) JMLR2020 [T5](https://huggingface.co/transformers/model_doc/t5.html)
 - [Identifying Causal Relations Using Parallel Wikipedia Articles](http://www.cs.columbia.edu/nlp/papers/2016/hidey_wikipedia_causality_acl2016.pdf) ACL2016
 
-- [Automatic Detection of Causal Relations for Question Answering](https://www.aclweb.org/anthology/W03-1210.pdf) ACL2003
-- [Creating causal embeddings for question answering with minimal supervision](https://www.aclweb.org/anthology/D16-1014/) EMNLP2016
+- [**Automatic Detection of Causal Relations for Question Answering**](https://www.aclweb.org/anthology/W03-1210.pdf) ACL2003
+- [**Creating causal embeddings for question answering with minimal supervision**](https://www.aclweb.org/anthology/D16-1014/) EMNLP2016
 
 ## Other Materials
 - [Causal Corpus 事件因果关系语料统计](https://blog.csdn.net/gao2628688/article/details/96228855)
