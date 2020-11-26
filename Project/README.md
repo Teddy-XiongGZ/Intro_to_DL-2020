@@ -20,12 +20,14 @@
 ## Related Research
 - [Automatic Extraction of Causal Relations from Natural Language Texts: A Comprehensive Survey](https://arxiv.org/pdf/1605.07895.pdf) 2016
 - [The BECauSE Corpus 2.0: Annotating Causality and Overlapping Relations](https://www.aclweb.org/anthology/W17-0812/) ACL2017
-- [Automatic Detection of Causal Relations for Question Answering](https://www.aclweb.org/anthology/W03-1210.pdf) ACL2003
-- [Automatic Extraction of Causal Relations from Text using Linguistically Informed Deep Neural Networks](https://www.aclweb.org/anthology/W18-5035/) ACL2018
+- [Automatic Extraction of Causal Relations from Text using Linguistically Informed Deep Neural Networks](https://www.aclweb.org/anthology/W18-5035/) SIGDIAL2018
 - [Causal Relation Extraction](http://lrec-conf.org/proceedings/lrec2008/pdf/87_paper.pdf) LREC2008
 - [CATENA: CAusal and TEmporal relation extraction from NAtural language texts](https://www.aclweb.org/anthology/C16-1007.pdf) ACL2016
 - [Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer](https://arxiv.org/pdf/1910.10683v3.pdf) JMLR2020 [T5](https://huggingface.co/transformers/model_doc/t5.html)
 - [Identifying Causal Relations Using Parallel Wikipedia Articles](http://www.cs.columbia.edu/nlp/papers/2016/hidey_wikipedia_causality_acl2016.pdf) ACL2016
+
+- [Automatic Detection of Causal Relations for Question Answering](https://www.aclweb.org/anthology/W03-1210.pdf) ACL2003
+- [Creating causal embeddings for question answering with minimal supervision](https://www.aclweb.org/anthology/D16-1014/) EMNLP2016
 
 ## Other Materials
 - [Causal Corpus 事件因果关系语料统计](https://blog.csdn.net/gao2628688/article/details/96228855)
