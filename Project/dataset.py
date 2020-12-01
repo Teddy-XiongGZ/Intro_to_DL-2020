@@ -1,12 +1,12 @@
-"""
-COPA dataset
-https://people.ict.usc.edu/~gordon/copa.html
-"""
-
 import torch
 from torch.utils.data import Dataset, DataLoader
 from xml.dom.minidom import parse
 import xml.dom.minidom
+
+"""
+COPA dataset
+https://people.ict.usc.edu/~gordon/copa.html
+"""
 
 class COPADataset(Dataset):
   """
