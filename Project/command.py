@@ -15,7 +15,7 @@ def cmd(string):
       return p.returncode
 
 def download(link):
-  """ download a file using the link provided """
+    """ download a file using the link provided """
     if not os.path.exists("download"):
         cmd("mkdir download")
     cmd("cd download && wget -c {}".format(link))
