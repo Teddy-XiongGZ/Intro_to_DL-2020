@@ -6,7 +6,7 @@ import subprocess
 import sys
 
 def cmd(string):
-    """ exec a cmd command and output to stdout """
+    """ exec a command and output to stdout """
     if "colab" in vars() and colab:
       return get_ipython().system(string)
     else:
