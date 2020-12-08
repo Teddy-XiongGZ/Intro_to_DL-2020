@@ -62,14 +62,14 @@ class Config(object):
                 acc = train_correct / train_total
             else:
                 acc = 0.0
-            self.logging('[Epoch {:d}] Training Loss: {:.6f}; Time: {:.2f}min; Accuracy: {:.4f}'.format(
+            self.logging('[Epoch {:d}] Training Loss: {:.6f}; Time: {:.2f}min; Accuracy: {:.5f}'.format(
             epoch + 1, train_loss, (time.time()-start_time)/60, acc))
             if (epoch + 1) % self.test_epoch == 0:
                 self.logging('-' * 70)
                 eval_start_time = time.time()
-                val_acc, val_loss = self.test(model, val_iter)
+                val_acc, val_loss = self.test(model, val_iter, criterion)
                 val_accs.append(val_acc)
-                self.logging('Validate\nValidation Loss: {:.6f}; Time: {:.2f}min; Accuracy: {:.8f}'.format(
+                self.logging('Validate\nValidation Loss: {:.6f}; Time: {:.2f}min; Accuracy: {:.5f}'.format(
                     val_loss, (time.time()-eval_start_time)/60, val_acc))
                 if val_acc > best_acc:
                     best_acc = val_acc
@@ -78,10 +78,10 @@ class Config(object):
                 model.train()
                 self.logging('-' * 70)
         self.logging('Training finished!')
-        self.logging('Best epoch: {:d} | Accuracy: {:.4f}'.format(best_epoch, best_acc))
+        self.logging('Best epoch: {:d} | Accuracy: {:.5f}'.format(best_epoch, best_acc))
         return train_losses, val_accs
     
-    def test(self, model, test_iter):
+    def test(self, model, test_iter, criterion):
         model.eval()
         total = correct = 0
         test_loss = 0.0
