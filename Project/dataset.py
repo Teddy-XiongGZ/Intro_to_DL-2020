@@ -1,6 +1,5 @@
 import os
 import random
-import torch
 import jsonlines
 import xml.dom.minidom
 from command import download
@@ -13,11 +12,13 @@ class COPA():
   path = "./download"
   train_file = "copa_train.jsonl"
   val_file = "copa_val.jsonl"
+  test_file = "copa_test.jsonl"
 
   def __init__(self):
     # download preprocessed files
     download("https://node0.static.jsonx.ml/copa/{}".format(self.train_file))
     download("https://node0.static.jsonx.ml/copa/{}".format(self.val_file))
+    download("https://node0.static.jsonx.ml/copa/{}".format(self.test_file))
 
     # we can also generate them ourselves
     # generate_from_xml(tokenizer)
@@ -28,10 +29,9 @@ class COPA():
   def get_val(self):
     return os.path.join(self.path, self.val_file)
 
-  def generate_from_xml(self, tokenizer):
+  def generate_from_xml(self, sep_token="</s>"):
     """ generate .jsonl files from COPA .xml manually """
     download("https://node0.static.jsonx.ml/copa/copa.xml")
-    sep_token = tokenizer.sep_token
     copa_corpus = xml.dom.minidom.parse("./download/copa.xml").documentElement
     items = copa_corpus.getElementsByTagName("item")
     samples = []
@@ -56,12 +56,18 @@ class COPA():
         samples.append({"text": wrong + sep_token + premise, "label": 0,
                         "tag": "cause" if tag == "effect" else "effect"})
 
-    samples_val = random.sample(samples, int(0.1 * len(samples)))
-    writer = jsonlines.open(os.path.join(self.path, self.train_file), mode='w')
-    for item in samples_val:
+    samples_valtest = random.sample(samples, int(0.3 * len(samples)))
+    samples_test = random.sample(samples_valtest, int(0.15 * len(samples)))
+    writer = jsonlines.open(os.path.join(self.path, self.test_file), mode='w')
+    for item in samples_test:
         writer.write(item)
 
     writer = jsonlines.open(os.path.join(self.path, self.val_file), mode='w')
+    for item in samples_valtest:
+        if item not in samples_test:
+            writer.write(item)
+
+    writer = jsonlines.open(os.path.join(self.path, self.train_file), mode='w')
     for item in samples:
-        if item not in samples_val:
+        if item not in samples_valtest:
             writer.write(item)
