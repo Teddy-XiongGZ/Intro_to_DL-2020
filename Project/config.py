@@ -90,9 +90,9 @@ class Config(object):
           data, data_len = batch.text
           target = batch.label - 1
           output = model(data, data_len).cpu()
-          # convert output probabilities to predicted class
+
           pred = torch.argmax(output, dim=-1)
-          # compare predictions to true label
+
           target = target.squeeze(-1).cpu()
           total += len(pred)
           correct += int(torch.sum(pred == target))
