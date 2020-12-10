@@ -21,7 +21,7 @@ class COPA():
     download("https://node0.static.jsonx.ml/copa/{}".format(self.test_file))
 
     # we can also generate them ourselves
-    # generate_from_xml(tokenizer)
+    # self.generate_from_xml(" ")
 
   def get_train(self):
     return os.path.join(self.path, self.train_file)
@@ -35,6 +35,8 @@ class COPA():
   def generate_from_xml(self, sep_token="</s>"):
     """ generate .jsonl files from COPA .xml manually """
     download("https://node0.static.jsonx.ml/copa/copa.xml")
+
+    ##### parsing #####
     copa_corpus = xml.dom.minidom.parse("./download/copa.xml").documentElement
     items = copa_corpus.getElementsByTagName("item")
     samples = []
@@ -59,6 +61,7 @@ class COPA():
         samples.append({"text": wrong + sep_token + premise, "label": 0,
                         "tag": "cause" if tag == "effect" else "effect"})
 
+    ##### split data into train, val and test #####
     samples_valtest = random.sample(samples, int(0.3 * len(samples)))
     samples_test = random.sample(samples_valtest, int(0.15 * len(samples)))
     writer = jsonlines.open(os.path.join(self.path, self.test_file), mode='w')
