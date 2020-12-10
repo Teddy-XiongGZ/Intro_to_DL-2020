@@ -64,16 +64,16 @@ class COPA():
     ##### split data into train, val and test #####
     samples_valtest = random.sample(samples, int(0.3 * len(samples)))
     samples_test = random.sample(samples_valtest, int(0.15 * len(samples)))
-    writer = jsonlines.open(os.path.join(self.path, self.test_file), mode='w')
+    writer = jsonlines.open(self.get_test(), mode='w')
     for item in samples_test:
-        writer.write(item)
+        writer.write(item) # in test
 
-    writer = jsonlines.open(os.path.join(self.path, self.val_file), mode='w')
+    writer = jsonlines.open(self.get_val(), mode='w')
     for item in samples_valtest:
         if item not in samples_test:
-            writer.write(item)
+            writer.write(item) # in val or test, but not in test 
 
-    writer = jsonlines.open(os.path.join(self.path, self.train_file), mode='w')
+    writer = jsonlines.open(self.get_train(), mode='w')
     for item in samples:
         if item not in samples_valtest:
-            writer.write(item)
+            writer.write(item) # not in val or test
