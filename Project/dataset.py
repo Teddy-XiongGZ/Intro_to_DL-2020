@@ -154,8 +154,8 @@ class XCOPA(Dataset):
         answer1 = item["choice1"]
         answer2 = item["choice2"]
 
-        correct = answer1 if label == 1 else answer2
-        wrong = answer2 if label == 1 else answer1
+        correct = answer1 if label == 0 else answer2
+        wrong = answer2 if label == 0 else answer1
 
         # one item can be augmented into four samples: cause/effect; correct/wrong
         sample_new.append({"text": premise + self.sep_token +
