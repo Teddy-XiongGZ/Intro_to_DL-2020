@@ -1,5 +1,15 @@
 """
 Datasets used for the task
+Motive:  
+- Datasets in NLP are in diverse formats. For instance, 
+  COPA uses .xml, while XCOPA and SocialIQA use .jsonl.  
+- The labels in different datasets are not always the same. 
+  A "premise" label in one dataset might be "context" in
+  another one.
+- Bigger space for customization.
+Attention:
+- We assume that the train and development sets provided
+  by datasets are of the same distribution.
 """
 
 import os
@@ -11,16 +21,18 @@ from command import download
 class Dataset():
   """ 
   Base class for the datasets used in the task.  
-  The common procedures for dataset generations are:  
-  Constructor __init__() called a member function generate(), inside of which 
-  the dataset is parsed from its original representation to a list of items.
-  Then, split() is called to separate the list into train, validation and
-  test sets. postprocess() is called if postprocessing is necessary 
-  (e.g. data formatting and augmentation), before executing a write() so that the files
-  could be used for torchtext.data.TabularDataset.
+  The common procedures for dataset generation are:  
+  Constructor __init__() called a member function generate(), 
+  inside of which the dataset is parsed from its original representation
+  to a list of items. Then, split() is called to separate the 
+  list into train, validation and test sets. postprocess() is called
+  if postprocessing is necessary (e.g. data formatting and augmentation), 
+  before executing a write() so that the files could be used for 
+  torchtext.data.TabularDataset.
   """
   name = "dataset"
   path = "./download"
+  size = 0
 
   def get_train(self):
     return os.path.join(self.path, "{}_train.jsonl".format(self.name))
@@ -30,6 +42,9 @@ class Dataset():
 
   def get_test(self):
     return os.path.join(self.path, "{}_test.jsonl".format(self.name))
+
+  def get_size(self):
+    return self.size
 
   def split(self, samples, proportions=(1.0, .0, .0)):
     """
@@ -63,25 +78,64 @@ class Dataset():
     writer = jsonlines.open(self.get_train(), mode='w')
     for item in samples[0]:
       writer.write(item)
+      self.size += 1
 
     writer = jsonlines.open(self.get_val(), mode='w')
     for item in samples[1]:
       writer.write(item)  # in val or test, but not in test
+      self.size += 1
 
     writer = jsonlines.open(self.get_test(), mode='w')
     for item in samples[2]:
       writer.write(item)  # in test
+      self.size += 1
 
+
+
+class CombinedDataset(Dataset):
+  """ 
+  This class is used for combining several datasets together.
+  Args:
+    name: name of this combined dataset.
+    datasets: an iterable containing the datasets to be combined.
+  """
+
+  def __init__(self, name, datasets):
+    self.name = name
+    self.datasets = datasets
+    self.generate()
+
+  def generate(self): # TODO: this function can be optimized by direct file-IO rather than jsonlines
+    samples_train = []
+    samples_val = []
+    samples_test = []
+    for dataset in self.datasets:
+      if os.path.exists(dataset.get_train()):
+        corpus = jsonlines.open(dataset.get_train(), mode='r')
+        for item in corpus.iter():
+          samples_train.append(item)
+
+      if os.path.exists(dataset.get_val()):
+        corpus = jsonlines.open(dataset.get_val(), mode='r')
+        for item in corpus.iter():
+          samples_val.append(item)
+
+      if os.path.exists(dataset.get_test()):
+        corpus = jsonlines.open(dataset.get_test(), mode='r')
+        for item in corpus.iter():
+          samples_test.append(item)
+
+    self.write((samples_train, samples_val, samples_test))
 
 
 class COPA(Dataset):
   """
-  COPA dataset utility that prepares necessary data and files.
+  COPA dataset utility that prepares necessary data and files.  
   https://people.ict.usc.edu/~gordon/copa.html
   """
 
   def __init__(self, proportions=(1.0, .0, .0), sep_token="</s>"):
-    self.name = "COPA"
+    self.name = "copa"
     self.proportions = proportions
     self.sep_token = sep_token
     # we can also generate them ourselves
@@ -131,12 +185,12 @@ class COPA(Dataset):
 
 class XCOPA(Dataset):
   """
-  XCOPA dataset utility that prepares necessary data and files.
+  XCOPA dataset utility that prepares necessary data and files.  
   https://github.com/cambridgeltl/xcopa
   """
 
   def __init__(self, proportions=(1.0, .0, .0), sep_token="</s>"):
-    self.name = "XCOPA"
+    self.name = "xcopa"
     self.proportions = proportions
     self.sep_token = sep_token
     self.generate()
@@ -157,7 +211,7 @@ class XCOPA(Dataset):
     for sample_list in samples:
       sample_new = []
       for item in sample_list:
-        label = item["label"]  # 1 / 2
+        label = item["label"]  # 0 / 1
         tag = item["question"]  # cause / effect
         premise = item["premise"]
         answer1 = item["choice1"]
@@ -175,6 +229,116 @@ class XCOPA(Dataset):
                         "label": 1, "tag": "cause" if tag == "effect" else "effect"})
         sample_new.append({"text": wrong + self.sep_token + premise, "label": 0,
                         "tag": "cause" if tag == "effect" else "effect"})
+      ret.append(sample_new)
+
+    return (ret[0], ret[1], ret[2])
+
+
+
+class WinoGrande(Dataset):
+  """
+  WinoGrande dataset utility that prepares necessary data and files.  
+  https://winogrande.allenai.org/  
+  Note: sep_token is not available in this dataset.
+  """
+
+  def __init__(self, proportions=(1.0, .0, .0), sep_token=""):
+    self.name = "winogrande"
+    self.proportions = proportions
+    self.sep_token = sep_token
+    self.generate()
+
+  def generate(self):
+    """ generate .jsonl files from WinoGrande manually """
+    download("https://node0.static.jsonx.ml/winogrande/winogrande.jsonl")
+
+    winogrande_corpus = jsonlines.open(
+        "./download/winogrande.jsonl", mode='r')
+    samples = []
+    for item in winogrande_corpus.iter():
+      samples.append(item)
+
+    self.write(self.postprocess(self.split(samples, self.proportions)))
+
+  def postprocess(self, samples):
+    ret = []
+    for sample_list in samples:
+      sample_new = []
+      for item in sample_list:
+        label = int(item["answer"])  # 1 / 2
+        premise = item["sentence"]
+        answer1 = item["option1"]
+        answer2 = item["option2"]
+
+        correct = answer1 if label == 1 else answer2
+        wrong = answer2 if label == 1 else answer1
+
+        # one item can be augmented into two samples: correct/wrong
+        sample_new.append({"text": premise.replace("_", correct), "label": 1})
+        sample_new.append({"text": premise.replace("_", wrong), "label": 0})
+      ret.append(sample_new)
+
+    return (ret[0], ret[1], ret[2])
+
+
+
+class SocialIQA(Dataset):
+  """
+  SocialIQA dataset utility that prepares necessary data and files.  
+  https://leaderboard.allenai.org/socialiqa/submissions/get-started  
+  Note: no tag information is available.
+  """
+
+  def __init__(self, proportions=(1.0, .0, .0), sep_token="</s>"):
+    self.name = "socialiqa"
+    self.proportions = proportions
+    self.sep_token = sep_token
+    self.generate()
+
+  def generate(self):
+    """ generate .jsonl files from SocialIQA manually """
+    download("https://node0.static.jsonx.ml/socialiqa/socialiqa.jsonl")
+    download("https://node0.static.jsonx.ml/socialiqa/socialiqa_label.txt")
+
+    socialiqa_corpus = jsonlines.open("./download/socialiqa.jsonl", mode='r') # unlabelled data
+    socialiqa_label = open("./download/label.txt", mode="r") # label
+    samples = []
+    for item in socialiqa_corpus.iter():
+      label = int(socialiqa_label.readline().strip())
+      samples.append({"text": item, "label": label})
+
+    self.write(self.postprocess(self.split(samples, self.proportions)))
+
+  def postprocess(self, samples):
+    ret = []
+    for sample_list in samples:
+      sample_new = []
+      for item in sample_list:
+        label = item["label"]  # 1 / 2 / 3
+        item = item["text"]
+        question = item["question"]  # expressed in natural language
+        premise = item["context"]
+        answer1 = item["answerA"]
+        answer2 = item["answerB"]
+        answer3 = item["answerC"]
+
+        correct = answer1 if label == 1 else (answer2 if label == 2 else answer3)
+        wrong1 = answer2 if label == 1 else (answer1)
+        wrong2 = answer2 if label == 3 else (answer3)
+
+        # one item can be augmented into six samples: cause/effect; correct/wrong
+        sample_new.append({"text": premise + " " + question + self.sep_token +
+                           correct, "label": 1})
+        sample_new.append({"text": premise + " " + question + self.sep_token +
+                           wrong1, "label": 0})
+        sample_new.append({"text": premise + " " + question + self.sep_token +
+                           wrong2, "label": 0})
+        sample_new.append({"text": correct + self.sep_token + premise,
+                           "label": 1})
+        sample_new.append({"text": wrong1 + self.sep_token + premise,
+                           "label": 0})
+        sample_new.append({"text": wrong2 + self.sep_token + premise,
+                           "label": 0})
       ret.append(sample_new)
 
     return (ret[0], ret[1], ret[2])
