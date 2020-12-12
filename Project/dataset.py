@@ -9,7 +9,16 @@ import xml.dom.minidom
 from command import download
 
 class Dataset():
-  """ Base class for the datasets used in the task. """
+  """ 
+  Base class for the datasets used in the task.  
+  The common procedures for dataset generations are:  
+  Constructor __init__() called a member function generate(), inside of which 
+  the dataset is parsed from its original representation to a list of items.
+  Then, split() is called to separate the list into train, validation and
+  test sets. postprocess() is called if postprocessing is necessary 
+  (e.g. data formatting and augmentation), before executing a write() so that the files
+  could be used for torchtext.data.TabularDataset.
+  """
   name = "dataset"
   path = "./download"
 
@@ -24,7 +33,7 @@ class Dataset():
 
   def split(self, samples, proportions=(1.0, .0, .0)):
     """
-    args:
+    args:  
       samples(list): the list of samples to be split
       proportions(tuple): corresponds respectively to the proportion of train, val and test data.
     TODO: we assume that "samples" is a list, but we can modify this function to accept any iterable. 
@@ -40,7 +49,7 @@ class Dataset():
   def postprocess(self, samples):
     """
     do postprocess here.
-    args:
+    args:  
       samples(tuple): (train samples, val samples, test samples), each as a list
     """
     return samples
@@ -48,7 +57,7 @@ class Dataset():
   def write(self, samples):
     """ 
     write the samples to .jsonl files.
-    args:
+    args:  
       samples(tuple): (train samples, val samples, test samples), each as a list
     """
     writer = jsonlines.open(self.get_train(), mode='w')
