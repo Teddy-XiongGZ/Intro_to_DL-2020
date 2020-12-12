@@ -301,7 +301,7 @@ class SocialIQA(Dataset):
     download("https://node0.static.jsonx.ml/socialiqa/socialiqa_label.txt")
 
     socialiqa_corpus = jsonlines.open("./download/socialiqa.jsonl", mode='r') # unlabelled data
-    socialiqa_label = open("./download/label.txt", mode="r") # label
+    socialiqa_label = open("./download/socialiqa_label.txt", mode="r") # label
     samples = []
     for item in socialiqa_corpus.iter():
       label = int(socialiqa_label.readline().strip())
