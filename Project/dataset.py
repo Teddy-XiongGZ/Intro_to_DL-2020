@@ -352,25 +352,25 @@ class DatasetManager:
   _datasets = []
   _index = 0
 
-  def __init__(config=None, device=None, fields=None):
+  def __init__(self, config=None, device=None, fields=None):
     self.fields = fields
     self.config = config
     self.device = device
 
-  def add(dataset):
+  def add(self, dataset):
     """
     Add a dataset to the end of workflow.  
     It will work even after next() has been called.  
     """
     _datasets.append(dataset)
 
-  def reset():
+  def reset(self):
     """
     Reset the workflow. next() now returns the first dataset.
     """
     self._index = 0
 
-  def next(split=True, iter=True):
+  def next(self, split=True, iter=True):
     """
     Return the next dataset iterators if split and iter, dataset splits if split, or the dataset itself if both are False.
     It always returns None if there are no more datasets.  
