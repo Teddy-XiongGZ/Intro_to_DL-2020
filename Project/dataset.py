@@ -395,6 +395,7 @@ class DatasetManager:
 
     if not iter:
       data = {}
+      data["name"] = dataset.name
       if dataset.size[0] > 0:
         data["train"] = train_data
       if dataset.size[1] > 0:
@@ -404,6 +405,7 @@ class DatasetManager:
       return data
 
     iter = {}
+    iter["name"] = dataset.name
     if dataset.size[0] > 0:
       iter["train"] = torchtext.data.BucketIterator(
         train_data, batch_size=self.config.batch_size, shuffle=True, sort_key=lambda x: len(x.text), device=self.device)
