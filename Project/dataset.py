@@ -15,7 +15,7 @@ Attention:
 import os
 import random
 import jsonlines
-import torchtext
+# import torchtext
 import xml.dom.minidom
 from command import download
 
@@ -76,6 +76,10 @@ class Dataset():
     args:  
       samples(tuple): (train samples, val samples, test samples), each as a list
     """
+    self.size = list()
+    self.size.append(0)
+    self.size.append(0)
+    self.size.append(0)
     writer = jsonlines.open(self.get_train(), mode='w')
     for item in samples[0]:
       writer.write(item)
