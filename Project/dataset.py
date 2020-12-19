@@ -352,8 +352,10 @@ class DatasetManager:
   _datasets = []
   _index = 0
 
-  def __init__(fields):
+  def __init__(config=None, device=None, fields=None):
     self.fields = fields
+    self.config = config
+    self.device = device
 
   def add(dataset):
     """
@@ -368,19 +370,21 @@ class DatasetManager:
     """
     self._index = 0
 
-  def next(iter=True):
+  def next(split=True, iter=True):
     """
-    Return the next dataset iterators if available, or None if there are no more datasets.  
-    Return:
-      a dict containing "train", "iter" or "test" iters depending on whether the input dataset contains them.
+    Return the next dataset iterators if split and iter, dataset splits if split, or the dataset itself if both are False.
+    It always returns None if there are no more datasets.  
+    Return (if split or iter):
+      a dict containing "train", "val" or "test" iters/data depending on whether the input dataset contains them.
     """
     if index >= len(self._datasets):
       return None
     dataset = self._datasets[index]
     index += 1
-    if not iter:
+    if not split:
       return dataset
-    train_iter, val_iter, test_iter = torchtext.data.TabularDataset.splits(
+    
+    train_data, val_data, test_data = torchtext.data.TabularDataset.splits(
         path=".",
         train=dataset.get_train(),
         validation=dataset.get_val(),
@@ -388,12 +392,25 @@ class DatasetManager:
         format='json',
         fields=self.fields
     )
+
+    if not iter:
+      data = {}
+      if dataset.size[0] > 0:
+        data["train"] = train_data
+      if dataset.size[1] > 0:
+        data["val"] = val_data
+      if dataset.size[2] > 0:
+        data["test"] = test_data
+      return data
+
     iter = {}
     if dataset.size[0] > 0:
-      iter["train"] = train_iter
+      iter["train"] = torchtext.data.BucketIterator(
+        train_data, batch_size=self.config.batch_size, shuffle=True, sort_key=lambda x: len(x.text), device=self.device)
     if dataset.size[1] > 0:
-      iter["val"] = val_iter
+      iter["val"] = torchtext.data.BucketIterator(
+        val_data, batch_size=self.config.batch_size, sort_key=lambda x: len(x.text), device=self.device)
     if dataset.size[2] > 0:
-      iter["test"] = test_iter
-
+      iter["test"] = torchtext.data.BucketIterator(
+        val_data, batch_size=self.config.batch_size, sort_key=lambda x: len(x.text), device=self.device)
     return iter
