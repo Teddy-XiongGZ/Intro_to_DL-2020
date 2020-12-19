@@ -396,7 +396,7 @@ class DatasetManager:
     )
 
     if not self._vocab:
-      fields["label"][1].build_vocab(train_data)
+      self.fields["label"][1].build_vocab(train_data)
       self._vocab = True
 
     if not iter:
