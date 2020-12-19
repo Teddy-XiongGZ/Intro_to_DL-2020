@@ -362,7 +362,7 @@ class DatasetManager:
     Add a dataset to the end of workflow.  
     It will work even after next() has been called.  
     """
-    _datasets.append(dataset)
+    self._datasets.append(dataset)
 
   def reset(self):
     """
