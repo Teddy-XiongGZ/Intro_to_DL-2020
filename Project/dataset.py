@@ -32,7 +32,7 @@ class Dataset():
   """
   name = "dataset"
   path = "./download"
-  size = 0
+  size = [0, 0, 0]
 
   def get_train(self):
     return os.path.join(self.path, "{}_train.jsonl".format(self.name))
@@ -78,17 +78,17 @@ class Dataset():
     writer = jsonlines.open(self.get_train(), mode='w')
     for item in samples[0]:
       writer.write(item)
-      self.size += 1
+      self.size[0] += 1
 
     writer = jsonlines.open(self.get_val(), mode='w')
     for item in samples[1]:
       writer.write(item)  # in val or test, but not in test
-      self.size += 1
+      self.size[1] += 1
 
     writer = jsonlines.open(self.get_test(), mode='w')
     for item in samples[2]:
       writer.write(item)  # in test
-      self.size += 1
+      self.size[2] += 1
 
 
 
@@ -342,3 +342,56 @@ class SocialIQA(Dataset):
       ret.append(sample_new)
 
     return (ret[0], ret[1], ret[2])
+
+
+
+class DatasetManager:
+  """
+  An utility that manages the datasets used for the entire pretrain-tune-test lifecycle.  
+  """
+  _datasets = []
+  _index = 0
+  fields = {'text': ('text', TEXT), 'label': ('label', LABEL)}
+
+  def add(dataset):
+    """
+    Add a dataset to the end of workflow.  
+    It will work even after next() has been called.  
+    """
+    _datasets.append(dataset)
+
+  def reset():
+    """
+    Reset the workflow. next() now returns the first dataset.
+    """
+    self._index = 0
+
+  def next(iter=True):
+    """
+    Return the next dataset iterators if available, or None if there are no more datasets.  
+    Return:
+      a dict containing "train", "iter" or "test" iters depending on whether the input dataset contains them.
+    """
+    if index >= len(_datasets):
+      return None
+    dataset = _datasets[index]
+    index += 1
+    if not iter:
+      return dataset
+    train_iter, val_iter, test_iter = torchtext.data.TabularDataset.splits(
+        path=".",
+        train=dataset.get_train(),
+        validation=dataset.get_val(),
+        test=dataset.get_test(),
+        format='json',
+        fields=self.fields
+    )
+    iter = {}
+    if dataset.size[0] > 0:
+      iter["train"] = train_iter
+    if dataset.size[1] > 0:
+      iter["val"] = val_iter
+    if dataset.size[2] > 0:
+      iter["test"] = test_iter
+
+    return iter
