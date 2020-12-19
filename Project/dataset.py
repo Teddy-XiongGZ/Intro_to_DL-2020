@@ -352,6 +352,7 @@ class DatasetManager:
   """
   _datasets = []
   _index = 0
+  _vocab = False
 
   def __init__(self, config=None, device=None, fields=None):
     self.fields = fields
@@ -393,6 +394,10 @@ class DatasetManager:
         format='json',
         fields=self.fields
     )
+
+    if not self._vocab:
+      fields["label"][1].build_vocab(train_data)
+      self._vocab = True
 
     if not iter:
       data = {}
