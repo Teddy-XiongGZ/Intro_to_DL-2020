@@ -377,10 +377,10 @@ class DatasetManager:
     Return (if split or iter):
       a dict containing "train", "val" or "test" iters/data depending on whether the input dataset contains them.
     """
-    if index >= len(self._datasets):
+    if self._index >= len(self._datasets):
       return None
-    dataset = self._datasets[index]
-    index += 1
+    dataset = self._datasets[self._index]
+    self._index += 1
     if not split:
       return dataset
     
@@ -414,5 +414,5 @@ class DatasetManager:
         val_data, batch_size=self.config.batch_size, sort_key=lambda x: len(x.text), device=self.device)
     if dataset.size[2] > 0:
       iter["test"] = torchtext.data.BucketIterator(
-        val_data, batch_size=self.config.batch_size, sort_key=lambda x: len(x.text), device=self.device)
+        test_data, batch_size=self.config.batch_size, sort_key=lambda x: len(x.text), device=self.device)
     return iter
