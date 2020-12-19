@@ -351,7 +351,9 @@ class DatasetManager:
   """
   _datasets = []
   _index = 0
-  fields = {'text': ('text', TEXT), 'label': ('label', LABEL)}
+
+  def __init__(fields):
+    self.fields = fields
 
   def add(dataset):
     """
@@ -372,9 +374,9 @@ class DatasetManager:
     Return:
       a dict containing "train", "iter" or "test" iters depending on whether the input dataset contains them.
     """
-    if index >= len(_datasets):
+    if index >= len(self._datasets):
       return None
-    dataset = _datasets[index]
+    dataset = self._datasets[index]
     index += 1
     if not iter:
       return dataset
