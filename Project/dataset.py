@@ -193,20 +193,21 @@ class XCOPA(Dataset):
   XCOPA dataset utility that prepares necessary data and files.  
   https://github.com/cambridgeltl/xcopa
   """
+  available_languages = ["et", "ht", "id", "it", "qu", "sw", "ta", "th", "tr", "vi", "zh"]
 
-  def __init__(self, proportions=(1.0, .0, .0), sep_token="</s>"):
-    self.name = "xcopa"
+  def __init__(self, proportions=(1.0, .0, .0), lang="zh", sep_token="</s>"):
+    self.name = "xcopa-" + lang
     self.proportions = proportions
     self.sep_token = sep_token
-    self.generate()
+    self.generate(lang)
 
-  def generate(self):
+  def generate(self, lang):
     """ generate .jsonl files from XCOPA manually """
-    download("https://node0.static.jsonx.ml/xcopa/xcopa.jsonl")
+    download("https://node0.static.jsonx.ml/xcopa/{}.jsonl".format(lang))
 
-    xcopa_corpus = jsonlines.open("./download/xcopa.jsonl", mode='r')
     samples = []
-    for item in xcopa_corpus.iter():
+    corpus = jsonlines.open("./download/{}.jsonl".format(lang), mode='r')
+    for item in corpus.iter():
       samples.append(item)
 
     self.write(self.postprocess(self.split(samples, self.proportions)))
