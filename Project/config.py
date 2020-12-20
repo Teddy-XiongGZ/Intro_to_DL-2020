@@ -72,7 +72,7 @@ class Config(object):
                 eval_start_time = time.time()
                 val_acc, val_loss = self.test(model, val_iter, criterion)
                 val_accs.append(val_acc)
-                self.logging('Validate\nValidation Loss: {:.6f}; Time: {:.2f}min; Accuracy: {:.5f}'.format(
+                self.logging('Validation Loss: {:.6f}; Time: {:.2f}min; Accuracy: {:.5f}'.format(
                     val_loss, (time.time()-eval_start_time)/60, val_acc))
                 if val_acc > best_acc:
                     best_acc = val_acc
@@ -108,3 +108,19 @@ class Config(object):
             accuracy = 0.0
         test_loss = test_loss/total
         return accuracy, test_loss
+
+    def predict(self, model, test_iter):
+        model.eval()  # prep model for *evaluation*
+        predictions = None
+
+        for batch in test_iter:
+          data, data_len = batch.text
+
+        output = model(data, data_len).cpu()
+
+        _, pred = torch.max(output, 1)
+        if predictions == None:
+            predictions = pred
+        else:
+            predictions = torch.cat((predictions, pred))
+        return predictions
