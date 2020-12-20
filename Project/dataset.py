@@ -31,9 +31,11 @@ class Dataset():
   before executing a write() so that the files could be used for 
   torchtext.data.TabularDataset.
   """
-  name = "dataset"
   path = "./download"
-  size = [0, 0, 0]
+
+  def __init__(self, name="dataset"):
+    self.name = name
+    self.size = [0, 0, 0]
 
   def get_train(self):
     return os.path.join(self.path, "{}_train.jsonl".format(self.name))
@@ -76,10 +78,6 @@ class Dataset():
     args:  
       samples(tuple): (train samples, val samples, test samples), each as a list
     """
-    self.size = list()
-    self.size.append(0)
-    self.size.append(0)
-    self.size.append(0)
     writer = jsonlines.open(self.get_train(), mode='w')
     for item in samples[0]:
       writer.write(item)
@@ -106,7 +104,7 @@ class CombinedDataset(Dataset):
   """
 
   def __init__(self, name, datasets):
-    self.name = name
+    super().__init__(name=name)
     self.datasets = datasets
     self.generate()
 
@@ -140,7 +138,7 @@ class COPA(Dataset):
   """
 
   def __init__(self, proportions=(1.0, .0, .0), sep_token="</s>"):
-    self.name = "copa"
+    super().__init__(name="copa")
     self.proportions = proportions
     self.sep_token = sep_token
     # we can also generate them ourselves
@@ -196,7 +194,9 @@ class XCOPA(Dataset):
   available_languages = ["et", "ht", "id", "it", "qu", "sw", "ta", "th", "tr", "vi", "zh"]
 
   def __init__(self, proportions=(1.0, .0, .0), lang="zh", sep_token="</s>"):
-    self.name = "xcopa-" + lang
+    super().__init__(name="xcopa-" + lang)
+    if not (lang in self.available_languages):
+      raise Exception("The specified language is not supported in XCOPA!")
     self.proportions = proportions
     self.sep_token = sep_token
     self.generate(lang)
@@ -249,7 +249,7 @@ class WinoGrande(Dataset):
   """
 
   def __init__(self, proportions=(1.0, .0, .0), sep_token=""):
-    self.name = "winogrande"
+    super().__init__(name="winogrande")
     self.proportions = proportions
     self.sep_token = sep_token
     self.generate()
@@ -296,7 +296,7 @@ class SocialIQA(Dataset):
   """
 
   def __init__(self, proportions=(1.0, .0, .0), sep_token="</s>"):
-    self.name = "socialiqa"
+    super().__init__(name="socialiqa")
     self.proportions = proportions
     self.sep_token = sep_token
     self.generate()
