@@ -46,7 +46,10 @@ class Config(object):
                 target = batch.label - 1  # label ranges from 1 to class_num
 
                 output = model(data, data_len)
-                loss = criterion(output, target)
+                if self.class_num == 1:
+                    loss = criterion(output, target.float())
+                else:
+                    loss = criterion(output, target)
                 loss.backward()
                 optimizer.step()
 
