@@ -64,7 +64,7 @@ class Config(object):
                 acc = 0.0
             self.logging('[Epoch {:d}] Training Loss: {:.6f}; Time: {:.2f}min; Accuracy: {:.5f}'.format(
             epoch + 1, train_loss, (time.time()-start_time)/60, acc))
-            if (epoch + 1) % self.test_epoch == 0:
+            if ((epoch + 1) % self.test_epoch == 0) and (not val_iter == None):
                 self.logging('-' * 70)
                 eval_start_time = time.time()
                 val_acc, val_loss = self.test(model, val_iter, criterion)

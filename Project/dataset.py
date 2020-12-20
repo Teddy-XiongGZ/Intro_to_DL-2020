@@ -56,7 +56,7 @@ class Dataset():
     """
     if not (sum(proportions) == 1):
       raise Exception("proportions of train, val and test do not sum to 1!")
-    random.shuffle(samples)
+    # random.shuffle(samples) # shuffle when making batch iters
     test_count = int(len(samples) * proportions[2]); 
     val_count = int(len(samples) * proportions[1]);
     train_count = len(samples) - test_count - val_count
