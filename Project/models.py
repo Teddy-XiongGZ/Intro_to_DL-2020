@@ -3,6 +3,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 from transformers import T5Tokenizer
 from transformers import MT5EncoderModel
+from transformers import RobertaTokenizer
+from transformers import RobertaModel
 from transformers import XLMRobertaTokenizer
 from transformers import XLMRobertaModel
 
@@ -25,6 +27,15 @@ class Moderl(nn.Module):
       tokens = self.tokenizer.tokenize(string)
       # reserve space for BOS and EOS
       return tokens[:self.tokenizer.model_max_length - 2]
+
+
+
+class Roberta(Moderl):
+    def __init__(self, conf, pretrain="roberta-large"):
+      tokenizer = RobertaTokenizer.from_pretrained(pretrain)
+      backbone = RobertaModel.from_pretrained(pretrain, return_dict=True)
+      hidden_size = backbone.config.to_dict()["hidden_size"]
+      super(Roberta, self).__init__(class_num=conf.class_num, tokenizer=tokenizer, backbone=backbone, hidden_size=hidden_size)
 
 
 
