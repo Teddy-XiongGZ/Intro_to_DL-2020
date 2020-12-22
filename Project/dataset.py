@@ -32,6 +32,8 @@ class Dataset():
   torchtext.data.TabularDataset.
   """
   path = "./download"
+  if not os.path.exists(path):
+    os.mkdir(path)
 
   def __init__(self, name="dataset"):
     self.name = name
@@ -106,7 +108,9 @@ class CombinedDataset(Dataset):
   """
 
   def __init__(self, name, datasets, train=True, val=True, test=True):
-    internal_name = name + " " + str(datasets)
+    internal_name = name + ":"
+    for dataset in datasets:
+      internal_name += " " + dataset.name
     super().__init__(name=internal_name)
     self.datasets = datasets
     self.train = train

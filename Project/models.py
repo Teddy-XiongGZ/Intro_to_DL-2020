@@ -12,40 +12,51 @@ class Moderl(nn.Module):
   """
   Base class for models used in this project.
   """
-  def __init__(self, class_num, tokenizer, backbone, hidden_size):
+  
+  def __init__(self, class_num, tokenizer, backbone, hidden_size, interim_dim = 3):
     super(Moderl, self).__init__()
     self.class_num = class_num
     self.tokenizer = tokenizer
     self.backbone = backbone
     self.hidden_size = hidden_size
-    self.fc_out = nn.Linear(self.hidden_size, self.class_num)
+    self.fc_in = nn.Linear(self.hidden_size, interim_dim)
+    self.fc_out = nn.Linear(interim_dim if self.class_num == 1 else self.hidden_size, self.class_num)
 
   def forward(self, x, x_len):
-      return self.fc_out(self.backbone(x).last_hidden_state[:, 0, :]).squeeze(1)
+    if class_num == 1:
+      return _forward_BCE(x, x_len)
+    else:
+      return _forward_BCE(x, x_len)
+
+  def _forward_CE(self, x, x_len):
+    return self.fc_out(self.backbone(x).last_hidden_state[:, 0, :])
+  
+  def _forward_BCE(self, x, x_len):
+    return self.fc_out(torch.sigmoid(self.fc_in(self.backbone(x).last_hidden_state[:, 0, :])))
 
   def tokenize(self, string):
-      tokens = self.tokenizer.tokenize(string)
-      # reserve space for BOS and EOS
-      return tokens[:self.tokenizer.model_max_length - 2]
+    tokens = self.tokenizer.tokenize(string)
+    # reserve space for BOS and EOS
+    return tokens[:self.tokenizer.model_max_length - 2]
 
 
 
 class Roberta(Moderl):
-    def __init__(self, conf, pretrain="roberta-large"):
-      tokenizer = RobertaTokenizer.from_pretrained(pretrain)
-      backbone = RobertaModel.from_pretrained(pretrain, return_dict=True)
-      hidden_size = backbone.config.to_dict()["hidden_size"]
-      super(Roberta, self).__init__(class_num=conf.class_num, tokenizer=tokenizer, backbone=backbone, hidden_size=hidden_size)
+  def __init__(self, conf, pretrain="roberta-large"):
+    tokenizer = RobertaTokenizer.from_pretrained(pretrain)
+    backbone = RobertaModel.from_pretrained(pretrain, return_dict=True)
+    hidden_size = backbone.config.to_dict()["hidden_size"]
+    super(Roberta, self).__init__(class_num=conf.class_num, tokenizer=tokenizer, backbone=backbone, hidden_size=hidden_size)
 
 
 
 class XLMRoberta(Moderl):
-    def __init__(self, conf, pretrain="xlm-roberta-large"):
-      tokenizer = XLMRobertaTokenizer.from_pretrained(pretrain)
-      backbone = XLMRobertaModel.from_pretrained(pretrain, return_dict=True)
-      hidden_size = backbone.config.to_dict()["hidden_size"]
-      super(XLMRoberta, self).__init__(class_num=conf.class_num, tokenizer=tokenizer, backbone=backbone, hidden_size=hidden_size)
-        
+  def __init__(self, conf, pretrain="xlm-roberta-large"):
+    tokenizer = XLMRobertaTokenizer.from_pretrained(pretrain)
+    backbone = XLMRobertaModel.from_pretrained(pretrain, return_dict=True)
+    hidden_size = backbone.config.to_dict()["hidden_size"]
+    super(XLMRoberta, self).__init__(class_num=conf.class_num, tokenizer=tokenizer, backbone=backbone, hidden_size=hidden_size)
+      
 
 
 class MT5(Moderl):
