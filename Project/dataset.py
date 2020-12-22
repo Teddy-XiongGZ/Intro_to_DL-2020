@@ -101,11 +101,16 @@ class CombinedDataset(Dataset):
   Args:
     name: name of this combined dataset.
     datasets: an iterable containing the datasets to be combined.
+    train/val/test: whether the result dataset contains train, val and test. 
+      For instance, if train=False, train data in individual datasets will not be used.
   """
 
-  def __init__(self, name, datasets):
+  def __init__(self, name, datasets, train=True, val=True, test=True):
     super().__init__(name=name)
     self.datasets = datasets
+    self.train = train
+    self.val = val
+    self.test = test
     self.generate()
 
   def generate(self): # TODO: this function can be optimized by direct file-IO rather than jsonlines
@@ -113,17 +118,17 @@ class CombinedDataset(Dataset):
     samples_val = []
     samples_test = []
     for dataset in self.datasets:
-      if os.path.exists(dataset.get_train()):
+      if os.path.exists(dataset.get_train()) and self.train:
         corpus = jsonlines.open(dataset.get_train(), mode='r')
         for item in corpus.iter():
           samples_train.append(item)
 
-      if os.path.exists(dataset.get_val()):
+      if os.path.exists(dataset.get_val()) and self.val:
         corpus = jsonlines.open(dataset.get_val(), mode='r')
         for item in corpus.iter():
           samples_val.append(item)
 
-      if os.path.exists(dataset.get_test()):
+      if os.path.exists(dataset.get_test()) and self.test:
         corpus = jsonlines.open(dataset.get_test(), mode='r')
         for item in corpus.iter():
           samples_test.append(item)
@@ -137,7 +142,7 @@ class COPA(Dataset):
   https://people.ict.usc.edu/~gordon/copa.html
   """
 
-  def __init__(self, proportions=(1.0, .0, .0), sep_token="</s>"):
+  def __init__(self, proportions=(0.5, 0, 0.5), sep_token=" "):
     super().__init__(name="copa")
     self.proportions = proportions
     self.sep_token = sep_token
@@ -172,15 +177,16 @@ class COPA(Dataset):
         correct = answer1 if label == 1 else answer2
         wrong = answer2 if label == 1 else answer1
 
-        # one item can be augmented into four samples: cause/effect; correct/wrong
         sample_new.append({"text": premise + self.sep_token +
                         correct, "label": 1, "tag": tag})
         sample_new.append({"text": premise + self.sep_token +
                         wrong, "label": 0, "tag": tag})
-        sample_new.append({"text": correct + self.sep_token + premise,
-                        "label": 1, "tag": "cause" if tag == "effect" else "effect"})
-        sample_new.append({"text": wrong + self.sep_token + premise, "label": 0,
-                        "tag": "cause" if tag == "effect" else "effect"})
+        if not sample_list == samples[2]:  # test set should not be augmented
+          # one item can be augmented into four samples: cause/effect; correct/wrong
+          sample_new.append({"text": correct + self.sep_token + premise,
+                          "label": 1, "tag": "cause" if tag == "effect" else "effect"})
+          sample_new.append({"text": wrong + self.sep_token + premise, "label": 0,
+                          "tag": "cause" if tag == "effect" else "effect"})
       ret.append(sample_new)
     return (ret[0], ret[1], ret[2])
 
@@ -193,7 +199,7 @@ class XCOPA(Dataset):
   """
   available_languages = ["et", "ht", "id", "it", "qu", "sw", "ta", "th", "tr", "vi", "zh"]
 
-  def __init__(self, proportions=(1.0, .0, .0), lang="zh", sep_token="</s>"):
+  def __init__(self, proportions=(.0, 1/6, 5/6), lang="zh", sep_token=" "):
     super().__init__(name="xcopa-" + lang)
     if not (lang in self.available_languages):
       raise Exception("The specified language is not supported in XCOPA!")
@@ -226,15 +232,16 @@ class XCOPA(Dataset):
         correct = answer1 if label == 0 else answer2
         wrong = answer2 if label == 0 else answer1
 
-        # one item can be augmented into four samples: cause/effect; correct/wrong
         sample_new.append({"text": premise + self.sep_token +
                         correct, "label": 1, "tag": tag})
         sample_new.append({"text": premise + self.sep_token +
                         wrong, "label": 0, "tag": tag})
-        sample_new.append({"text": correct + self.sep_token + premise,
-                        "label": 1, "tag": "cause" if tag == "effect" else "effect"})
-        sample_new.append({"text": wrong + self.sep_token + premise, "label": 0,
-                        "tag": "cause" if tag == "effect" else "effect"})
+        if not sample_list == samples[2]:  # test set should not be augmented
+          # one item can be augmented into four samples: cause/effect; correct/wrong
+          sample_new.append({"text": correct + self.sep_token + premise,
+                          "label": 1, "tag": "cause" if tag == "effect" else "effect"})
+          sample_new.append({"text": wrong + self.sep_token + premise, "label": 0,
+                          "tag": "cause" if tag == "effect" else "effect"})
       ret.append(sample_new)
 
     return (ret[0], ret[1], ret[2])
@@ -248,10 +255,9 @@ class WinoGrande(Dataset):
   Note: sep_token is not available in this dataset.
   """
 
-  def __init__(self, proportions=(1.0, .0, .0), sep_token=""):
+  def __init__(self, proportions=(1.0, .0, .0)):
     super().__init__(name="winogrande")
     self.proportions = proportions
-    self.sep_token = sep_token
     self.generate()
 
   def generate(self):
@@ -278,8 +284,7 @@ class WinoGrande(Dataset):
 
         correct = answer1 if label == 1 else answer2
         wrong = answer2 if label == 1 else answer1
-
-        # one item can be augmented into two samples: correct/wrong
+        
         sample_new.append({"text": premise.replace("_", correct), "label": 1})
         sample_new.append({"text": premise.replace("_", wrong), "label": 0})
       ret.append(sample_new)
@@ -292,10 +297,10 @@ class SocialIQA(Dataset):
   """
   SocialIQA dataset utility that prepares necessary data and files.  
   https://leaderboard.allenai.org/socialiqa/submissions/get-started  
-  Note: no tag information is available.
+  Note: This dataset does not distinguish between cause/effect.
   """
 
-  def __init__(self, proportions=(1.0, .0, .0), sep_token="</s>"):
+  def __init__(self, proportions=(1.0, .0, .0), sep_token=" "):
     super().__init__(name="socialiqa")
     self.proportions = proportions
     self.sep_token = sep_token
@@ -332,19 +337,19 @@ class SocialIQA(Dataset):
         wrong1 = answer2 if label == 1 else (answer1)
         wrong2 = answer2 if label == 3 else (answer3)
 
-        # one item can be augmented into six samples: cause/effect; correct/wrong
         sample_new.append({"text": premise + " " + question + self.sep_token +
                            correct, "label": 1})
         sample_new.append({"text": premise + " " + question + self.sep_token +
                            wrong1, "label": 0})
         sample_new.append({"text": premise + " " + question + self.sep_token +
                            wrong2, "label": 0})
-        sample_new.append({"text": correct + self.sep_token + premise,
-                           "label": 1})
-        sample_new.append({"text": wrong1 + self.sep_token + premise,
-                           "label": 0})
-        sample_new.append({"text": wrong2 + self.sep_token + premise,
-                           "label": 0})
+        if not sample_list == samples[2]:  # test set should not be augmented
+          sample_new.append({"text": correct + self.sep_token + premise,
+                            "label": 1})
+          sample_new.append({"text": wrong1 + self.sep_token + premise,
+                            "label": 0})
+          sample_new.append({"text": wrong2 + self.sep_token + premise,
+                            "label": 0})
       ret.append(sample_new)
 
     return (ret[0], ret[1], ret[2])
