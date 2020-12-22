@@ -23,7 +23,7 @@ class Moderl(nn.Module):
     self.fc_out = nn.Linear(interim_dim if self.class_num == 1 else self.hidden_size, self.class_num)
 
   def forward(self, x, x_len):
-    if class_num == 1:
+    if self.class_num == 1:
       return _forward_BCE(x, x_len)
     else:
       return _forward_BCE(x, x_len)
