@@ -106,7 +106,8 @@ class CombinedDataset(Dataset):
   """
 
   def __init__(self, name, datasets, train=True, val=True, test=True):
-    super().__init__(name=name)
+    internal_name = name + " " + str(datasets)
+    super().__init__(name=internal_name)
     self.datasets = datasets
     self.train = train
     self.val = val
