@@ -7,7 +7,7 @@ from transformers import XLMRobertaModel
 
 class XLMRoberta(nn.Module):
   def __init__(self, conf, pretrain="xlm-roberta-large"):
-    super(Moderl, self).__init__()
+    super(XLMRoberta, self).__init__()
     self.class_num = conf.class_num
     self.tokenizer = XLMRobertaTokenizer.from_pretrained("xlm-roberta-large")
     self.backbone = XLMRobertaModel.from_pretrained(
