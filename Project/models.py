@@ -19,7 +19,7 @@ class Moderl(nn.Module):
     self.fc_out = nn.Linear(self.hidden_size, self.class_num)
 
   def forward(self, x, x_len):
-      return self.fc_out(self.backbone(x).last_hidden_state[:, 0, :])
+      return self.fc_out(self.backbone(x).last_hidden_state[:, 0, :]).squeeze(1)
 
   def tokenize(self, string):
       tokens = self.tokenizer.tokenize(string)
