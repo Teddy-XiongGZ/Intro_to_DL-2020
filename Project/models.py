@@ -24,9 +24,9 @@ class Moderl(nn.Module):
 
   def forward(self, x, x_len):
     if self.class_num == 1:
-      return _forward_BCE(x, x_len)
+      return self._forward_BCE(x, x_len)
     else:
-      return _forward_BCE(x, x_len)
+      return self._forward_CE(x, x_len)
 
   def _forward_CE(self, x, x_len):
     return self.fc_out(self.backbone(x).last_hidden_state[:, 0, :])
