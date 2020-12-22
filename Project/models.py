@@ -29,10 +29,14 @@ class Moderl(nn.Module):
       return self._forward_CE(x, x_len)
 
   def _forward_CE(self, x, x_len):
-    return self.fc_out(self.backbone(x).last_hidden_state[:, 0, :])
+    x = self.backbone(x).last_hidden_state[:, 0, :]
+    return self.fc_out(x)
   
   def _forward_BCE(self, x, x_len):
-    return self.fc_out(torch.sigmoid(self.fc_in(self.backbone(x).last_hidden_state[:, 0, :]))).squeeze(1)
+    x = self.backbone(x).last_hidden_state[:, 0, :]
+    x = self.fc_in(x)
+    x = torch.sigmoid(x)
+    return self.fc_out(x).squeeze(1)
 
   def tokenize(self, string):
     tokens = self.tokenizer.tokenize(string)
