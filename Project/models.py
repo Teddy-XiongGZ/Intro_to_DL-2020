@@ -69,4 +69,4 @@ class MT5(Moderl):
     tokenizer = T5Tokenizer.from_pretrained(pretrain)
     backbone = MT5EncoderModel.from_pretrained(pretrain, return_dict=True)
     hidden_size = backbone.config.to_dict()["d_model"]
-    super(XLMRoberta, self).__init__(class_num=conf.class_num, tokenizer=tokenizer, backbone=backbone, hidden_size=hidden_size)
+    super(MT5, self).__init__(class_num=conf.class_num, tokenizer=tokenizer, backbone=backbone, hidden_size=hidden_size)
