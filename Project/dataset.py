@@ -432,8 +432,8 @@ class DatasetManager:
         train_data, batch_size=self.config.batch_size, shuffle=True, sort_key=lambda x: len(x.text), device=self.device)
     if dataset.size[1] > 0:
       iter["val"] = torchtext.data.BucketIterator(
-        val_data, batch_size=self.config.batch_size, sort_key=lambda x: len(x.text), device=self.device)
+        val_data, batch_size=self.config.test_batch_size, sort_key=lambda x: len(x.text), device=self.device)
     if dataset.size[2] > 0:
       iter["test"] = torchtext.data.BucketIterator(
-        test_data, batch_size=self.config.batch_size, sort_key=lambda x: len(x.text), device=self.device)
+        test_data, batch_size=self.config.test_batch_size, sort_key=lambda x: len(x.text), device=self.device)
     return iter
