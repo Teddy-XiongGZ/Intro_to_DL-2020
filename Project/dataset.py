@@ -306,7 +306,7 @@ class SocialIQA(Dataset):
   """
 
   def __init__(self, proportions=(1.0, .0, .0), sep_token=" ", denoise=True):
-    super().__init__(name="socialiqa")
+    super().__init__(name="socialiqa_denoise" if denoise else "socialiqa")
     self.proportions = proportions
     self.sep_token = sep_token
     self.denoise = denoise
