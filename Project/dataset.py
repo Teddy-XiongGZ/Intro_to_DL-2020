@@ -314,7 +314,7 @@ class SocialIQA(Dataset):
 
   def generate(self):
     """ generate .jsonl files from SocialIQA manually """
-    denoise_dir = "denoise" if self.denoise else ""
+    denoise_dir = "_denoise" if self.denoise else ""
     download("https://node0.static.jsonx.ml/socialiqa/socialiqa{}.jsonl".format(denoise_dir))
     download("https://node0.static.jsonx.ml/socialiqa/socialiqa_label{}.txt".format(denoise_dir))
 
