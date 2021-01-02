@@ -19,24 +19,26 @@ class Moderl(nn.Module):
     self.tokenizer = tokenizer
     self.backbone = backbone
     self.hidden_size = hidden_size
-    self.fc_in = nn.Linear(self.hidden_size, interim_dim)
-    self.fc_out = nn.Linear(interim_dim if self.class_num == 1 else self.hidden_size, self.class_num)
+    # self.fc_in = nn.Linear(self.hidden_size, interim_dim)
+    self.fc_out = nn.Linear(self.hidden_size, self.class_num)
 
   def forward(self, x, x_len):
-    if self.class_num == 1:
-      return self._forward_BCE(x, x_len)
-    else:
-      return self._forward_CE(x, x_len)
-
-  def _forward_CE(self, x, x_len):
     x = self.backbone(x).last_hidden_state[:, 0, :]
-    return self.fc_out(x)
-  
-  def _forward_BCE(self, x, x_len):
-    x = self.backbone(x).last_hidden_state[:, 0, :]
-    x = self.fc_in(x)
-    x = torch.sigmoid(x)
     return self.fc_out(x).squeeze(1)
+    # if self.class_num == 1:
+    #   return self._forward_BCE(x, x_len)
+    # else:
+    #   return self._forward_CE(x, x_len)
+
+  # def _forward_CE(self, x, x_len):
+  #   x = self.backbone(x).last_hidden_state[:, 0, :]
+  #   return self.fc_out(x)
+  
+  # def _forward_BCE(self, x, x_len):
+  #   x = self.backbone(x).last_hidden_state[:, 0, :]
+  #   x = self.fc_in(x)
+  #   x = torch.sigmoid(x)
+  #   return self.fc_out(x).squeeze(1)
 
   def tokenize(self, string):
     tokens = self.tokenizer.tokenize(string)
