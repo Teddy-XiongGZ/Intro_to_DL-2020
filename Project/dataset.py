@@ -314,12 +314,12 @@ class SocialIQA(Dataset):
 
   def generate(self):
     """ generate .jsonl files from SocialIQA manually """
-    denoise_dir = "denoise/" if self.denoise else ""
-    download("https://node0.static.jsonx.ml/socialiqa/{}socialiqa.jsonl".format(denoise_dir))
-    download("https://node0.static.jsonx.ml/socialiqa/{}socialiqa_label.txt".format(denoise_dir))
+    denoise_dir = "denoise" if self.denoise else ""
+    download("https://node0.static.jsonx.ml/socialiqa/socialiqa{}.jsonl".format(denoise_dir))
+    download("https://node0.static.jsonx.ml/socialiqa/socialiqa_label{}.txt".format(denoise_dir))
 
-    socialiqa_corpus = jsonlines.open("./download/socialiqa.jsonl", mode='r') # unlabelled data
-    socialiqa_label = open("./download/socialiqa_label.txt", mode="r") # label
+    socialiqa_corpus = jsonlines.open("./download/socialiqa{}.jsonl".format(denoise_dir), mode='r') # unlabelled data
+    socialiqa_label = open("./download/socialiqa_label{}.txt".format(denoise_dir), mode="r") # label
     samples = []
     for item in socialiqa_corpus.iter():
       label = int(socialiqa_label.readline().strip())
