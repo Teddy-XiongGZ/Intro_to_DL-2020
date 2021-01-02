@@ -305,16 +305,18 @@ class SocialIQA(Dataset):
   Note: This dataset does not distinguish between cause/effect.
   """
 
-  def __init__(self, proportions=(1.0, .0, .0), sep_token=" "):
+  def __init__(self, proportions=(1.0, .0, .0), sep_token=" ", denoise=True):
     super().__init__(name="socialiqa")
     self.proportions = proportions
     self.sep_token = sep_token
+    self.denoise = denoise
     self.generate()
 
   def generate(self):
     """ generate .jsonl files from SocialIQA manually """
-    download("https://node0.static.jsonx.ml/socialiqa/socialiqa.jsonl")
-    download("https://node0.static.jsonx.ml/socialiqa/socialiqa_label.txt")
+    denoise_dir = "denoise/" if self.denoise else ""
+    download("https://node0.static.jsonx.ml/socialiqa/{}socialiqa.jsonl".format(denoise_dir))
+    download("https://node0.static.jsonx.ml/socialiqa/{}socialiqa_label.txt".format(denoise_dir))
 
     socialiqa_corpus = jsonlines.open("./download/socialiqa.jsonl", mode='r') # unlabelled data
     socialiqa_label = open("./download/socialiqa_label.txt", mode="r") # label
