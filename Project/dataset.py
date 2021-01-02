@@ -305,11 +305,12 @@ class SocialIQA(Dataset):
   Note: This dataset does not distinguish between cause/effect.
   """
 
-  def __init__(self, proportions=(1.0, .0, .0), sep_token=" ", denoise=True):
+  def __init__(self, proportions=(1.0, .0, .0), sep_token=" ", denoise=True, augment=False):
     super().__init__(name="socialiqa_denoise" if denoise else "socialiqa")
     self.proportions = proportions
     self.sep_token = sep_token
     self.denoise = denoise
+    self.augment = augment
     self.generate()
 
   def generate(self):
@@ -350,7 +351,7 @@ class SocialIQA(Dataset):
                            wrong1, "label": 0})
         sample_new.append({"text": premise + " " + question + self.sep_token +
                            wrong2, "label": 0})
-        if not sample_list == samples[2]:  # test set should not be augmented
+        if self.augment and not sample_list == samples[2]:  # test set should not be augmented
           sample_new.append({"text": correct + self.sep_token + premise,
                             "label": 1})
           sample_new.append({"text": wrong1 + self.sep_token + premise,
