@@ -44,7 +44,8 @@ class Config(object):
         optimizer.zero_grad()
 
         data, data_len = batch.text
-        target = batch.label - 1  # label ranges from 1 to class_num
+        data = data.to(self.device)
+        target = (batch.label - 1).to(self.device)  # label ranges from 1 to class_num
 
         output = model(data, data_len)
         if self.class_num == 1:
@@ -99,7 +100,8 @@ class Config(object):
 
     for batch in test_iter:
       data, data_len = batch.text
-      target = batch.label - 1
+      data = data.to(self.device)
+      target = (batch.label - 1).to(self.device)
       output = model(data, data_len)
 
       if self.class_num == 1:
@@ -131,12 +133,12 @@ class Config(object):
 
     for batch in test_iter:
       data, data_len = batch.text
+      data = data.to(self.device)
+      output = model(data, data_len).cpu()
+      _, pred = torch.max(output, 1)
+      if predictions == None:
+        predictions = pred
+      else:
+        predictions = torch.cat((predictions, pred))
 
-    output = model(data, data_len).cpu()
-
-    _, pred = torch.max(output, 1)
-    if predictions == None:
-      predictions = pred
-    else:
-      predictions = torch.cat((predictions, pred))
     return predictions
